@@ -6,7 +6,7 @@ const csv = require('csv-parser'); // csv-parserを正しく読み込む
 const path = require('path');
 
 app.use(express.static(path.join(__dirname, 'view')));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/data', (req, res) => {
     const results = [];
