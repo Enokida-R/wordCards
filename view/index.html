@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styless.css">
+    <title>英単語確認</title>
+</head>
+<body>
+    <nav role="navigation" class="nav">
+        <ul class="nav-items">
+            <li class="nav-item" id="homeButton">
+                <a href="#" class="nav-link"><span>Home</span></a>
+            </li> 
+            <li class="nav-item" id="addButton">
+                <a href="#" class="nav-link"><span>add</span></a>
+            </li> 
+            <li class="nav-item" id="wordsList">
+                <a href="#" class="nav-link"><span>list</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link"><span>WeakPOint</span></a>
+            </li>   
+        </ul>
+    </nav>
+    <div class="container" id="container">
+        <div class="content" id="content">
+            <!-- 単語表示ボックス -->
+            <div class="wordbox">
+                <p id="word-front"></p>
+            </div>
+    
+            <!-- 選択肢ボックス -->
+            <div class="control">
+                <div class="options">
+                    <input type="radio" name="options" id="checkbox1" value="1">
+                    <label for="checkbox1"><span id="label1"></span></label><br>
+    
+                    <input type="radio" name="options" id="checkbox2" value="2">
+                    <label for="checkbox2"><span id="label2"></span></label><br>
+    
+                    <input type="radio" name="options" id="checkbox3" value="3">
+                    <label for="checkbox3"><span id="label3"></span></label><br>
+    
+                    <input type="radio" name="options" id="checkbox4" value="4">
+                    <label for="checkbox4"><span id="label4"></span></label><br>
+                </div>
+            </div>
+    
+            <!-- 確認ボタン -->
+            <input id="button" type="button" value="確認" />
+        </div>
+    </div>
+    <div id="inputform">
+        <input type="text" id="inputword" placeholder="単語">
+        <input type="text" id="inputmeaning" placeholder="意味">
+        <button id="add">追加</button>
+    </div>
+    <div id="listPage">
+
+    </div>
+
+    <script>
+       // 初期設定：最初の単語と選択肢を表示
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/data')
+                .then(response => response.json())
+                .then(fetchData => {
+                    data = fetchData;
+                    displayWordAndOptions(); // 初回の単語と選択肢のセット
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        });
+
+        let data = [];  // 単語データの配列
+        let num = 0;
+
+        // 単語と選択肢を表示
+        const displayWordAndOptions = () => {
+            num = Math.floor(Math.random()*data.length);  // 単語のインデックス
+            // 単語表示用の要素を取得
+            const wordFrontElement = document.getElementById('word-front');
+            
+            // nullチェックを行い、要素が存在する場合のみ処理を続行
+            if (wordFrontElement) {
+                const displayWord = data[num].word;
+                wordFrontElement.textContent = displayWord;
+            } else {
+                console.error('word-front element not found');
+            }
+
+            // 選択肢の生成
+            const correctMeaning = data[num].meaning;
+
+            // 正解を含む選択肢を生成
+            const randomMeanings = generateRandomOptions(correctMeaning);
+
+            // 選択肢のセット
+            for (let i = 0; i < 4; i++) {
+                const checkbox = document.getElementById(`checkbox${i + 1}`);
+                const label = document.getElementById(`label${i + 1}`);
+
+                // nullチェックを追加してエラーを防ぐ
+                if (checkbox && label) {
+                    checkbox.value = randomMeanings[i]; // valueに意味をセット
+                    label.textContent = randomMeanings[i]; // ラベルに意味を表示
+                } else {
+                    console.error(`checkbox${i + 1} or label${i + 1} element not found`);
+                }
+
+
+            }
+
+            // 選択肢のチェックをリセット
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => {
+                radio.checked = false;
+            });
+        };
+
+        // 選択肢をランダム化
+        const generateRandomOptions = (correctMeaning) => {
+            let options = [];
+
+            // ランダムに正解以外から三つ選ぶ
+            const incorrectMeaning = data
+                .filter(item => item.meaning !== correctMeaning)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
+
+            // 正解と不正解を一つの配列にまとめる
+            options = [...incorrectMeaning.map(item => item.meaning), correctMeaning];
+
+            // 配列をシャッフル
+            return options.sort(() => 0.5 - Math.random());
+        };
+
+        // 正解判定を行う関数
+        const checkAnswer = () => {
+            const selectedOption = document.querySelector('input[name="options"]:checked');
+            if (selectedOption) {
+                const selectedValue = selectedOption.value;
+                const correctMeaning = data[num].meaning; // 現在の単語の正しい意味
+
+                if (selectedValue === correctMeaning) {
+                    
+                } else {
+                    alert(`不正解！\n正解は${correctMeaning}`);
+                }
+            } else {
+                alert('選択肢を選んでください');
+            }
+        };
+
+        // 次の単語に移動する際にwordboxがめくれるようにアニメーションを追加
+        document.getElementById('button').addEventListener('click', () => {
+            const wordbox = document.querySelector('.wordbox');
+            
+            // 正解判定
+            checkAnswer();
+
+            // カードをめくるアニメーションを実行
+            wordbox.classList.add('flipped');
+
+            // アニメーションが終わる前に新しい単語を裏側にセット
+            setTimeout(() => {
+                num++;  // 次の問題に進む
+                if (num >= data.length) {
+                    num = 0;  // 最後までいったら最初に戻る
+                }
+                document.getElementById('word-front').textContent = data[num].word;
+
+                // 新しい単語と選択肢をセット
+                displayWordAndOptions();
+            }, 500); // アニメーション後に次の単語を表示
+
+            // アニメーションが終了後にフリップを解除
+            setTimeout(() => {
+                wordbox.classList.remove('flipped');
+            }, 500); // アニメーションが1秒かかる
+        });
+
+        // 単語と意味を追加する機能
+        document.getElementById('add').addEventListener('click', () => {
+            const word = document.getElementById('inputword').value;
+            const meaning = document.getElementById('inputmeaning').value;
+
+            if (word && meaning) {
+                fetch('/add-word', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        word: word,
+                        meaning: meaning
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('単語が追加されました。');
+                        document.getElementById('inputword').value = '';
+                        document.getElementById('inputmeaning').value = '';
+                    } else {
+                        alert('単語の追加に失敗しました。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                alert('単語と意味を入力してください。');
+            }
+        });
+
+        // add(menu)
+        document.getElementById('addButton').addEventListener('click', () => {
+            // 'inputform'と'wordListContainer'の存在を確認してから処理
+            const inputForm = document.getElementById('inputform');
+            const wordListContainer = document.getElementById('wordListContainer');
+            const content = document.getElementById('content');
+
+            if (inputForm) inputForm.style.display = 'block';
+            if (wordListContainer) wordListContainer.style.display = 'none';
+            if (content) content.style.display = 'none';
+        });
+
+        // home(menu)
+        document.getElementById('homeButton').addEventListener('click', () => {
+            const content = document.getElementById('content');
+            const inputForm = document.getElementById('inputform');
+            const wordListContainer = document.getElementById('wordListContainer');
+
+            if (content) content.style.display = 'block';
+            if (inputForm) inputForm.style.display = 'none';
+            if (wordListContainer) wordListContainer.style.display = 'none';
+        });
+
+        // list(menu)
+        document.getElementById('wordsList').addEventListener('click', () => {
+            fetch('/data-test')
+                .then(response => response.json())
+                .then(wordList => {
+                    displayWordList(wordList); // 関数名を修正
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+        // 単語リストを表示する関数
+        const displayWordList = (wordList) => {
+            let listContainer = document.getElementById('wordListContainer');
+            let listForm = document.getElementById('listInForm');
+            
+            // 既存のリストコンテナがない場合に作成する
+            if (!listContainer && !listForm) {
+                
+                listForm = document.createElement('div');
+                listForm.setAttribute('id', 'listInForm');
+                document.body.appendChild(listForm);
+                
+                listContainer = document.createElement('div');
+                listContainer.setAttribute('id', 'wordListContainer');
+                document.body.appendChild(listContainer);
+            }
+
+            // リストの内容をクリアして新しいリストを作成
+            listContainer.innerHTML = ''; 
+
+            // リストページのformを作成
+            listForm.innerHTML = `
+                <input type="text" id="listInputWord" placeholder="単語">
+                <input type="text" id="listInputMeaning" placeholder="意味">
+                <button id="confirmButton">確定</button>
+            `;
+
+            listContainer.appendChild(listForm);
+
+            const list = document.createElement('ul');
+
+            wordList.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.word} - ${item.meaning}`;
+
+                listItem.addEventListener('click', () => {
+                    // 元の単語と意味を保持;
+                    const oldWord = item.word;
+                    const oldMeaning = item.meaning;
+
+                    document.getElementById('listInputWord').value = item.word;
+                    document.getElementById('listInputMeaning').value = item.meaning;
+
+                    document.getElementById('confirmButton').addEventListener('click', () => {
+                        const word = document.getElementById('listInputWord').value;
+                        const meaning = document. getElementById('listInputMeaning').value;
+
+                        if (word && meaning) {
+                            fetch('/correction', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                oldWord: oldWord,
+                                oldMeaning: oldMeaning,
+                                word: word,
+                                meaning: meaning
+                            })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('単語が追加されました。');
+                                    document.getElementById('listInputWord').value = '';
+                                    document.getElementById('listInputMeaning').value = '';
+
+                                    // 修正が成功した後にリストを再読み込み
+                                    fetch('/data-test')
+                                        .then(response => response.json())
+                                        .then(updatedWordList => {
+                                            displayWordList(updatedWordList); // リストを再表示
+                                        });
+                                } else {
+                                    alert('単語の追加に失敗しました。');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                        
+                    });
+                });
+
+                list.appendChild(listItem);
+            });
+
+            listContainer.appendChild(list);
+
+            listContainer.style.display = 'block';
+            
+
+
+            // 既存の単語やフォームを非表示にする
+            const inputForm = document.getElementById('inputform');
+            const content = document.getElementById('content');
+
+            if (inputForm) inputForm.style.display = 'none';
+            if (content) content.style.display = 'none';
+        };
+    </script>
+</body>
+</html>

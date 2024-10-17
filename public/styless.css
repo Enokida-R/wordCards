@@ -1,0 +1,458 @@
+/* 全体コンテナ */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    perspective: 1000px; /* 3D効果をつけるための視点設定 */
+}
+
+/* コンテンツボックス */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* 単語追加フォーム */
+#inputform {
+    display: none; /* 最初は非表示 */
+    position: absolute; /* 他の要素に影響を与えないようにする */
+    top: 50%; /* 画面中央に表示 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* 他のコンテンツより前面に表示 */
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 単語表示ボックス */
+.wordbox {
+    width: 300px;
+    height: 150px;
+    margin: 5px;
+    padding: 10px;
+    border: solid 2px #999;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    background-color: #ffffff;
+    align-items: center;
+    transition: transform 1s; /* アニメーション時間を1秒に */
+    transform-origin: left center; /* Y軸の中央左から回転 */
+    transform-style: preserve-3d; /* 3D空間の回転 */
+    backface-visibility: hidden; /* 背面を見えなくする */
+}
+
+.wordbox.flipped {
+    transform: rotateY(-180deg); /* 180度回転させてページをめくる */
+}
+
+/* 次のページ側のスタイル（新しい単語のカード） */
+.wordbox-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    transform: rotateY(180deg); /* 裏面を180度回転してセット */
+}
+
+/* 選択肢ボックス */
+.control {
+    width: 300px;
+    text-align: center;
+}
+
+/* 選択肢ラベル */
+.options label {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: 2px solid #006DD9;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: background 0.3s, color 0.3s;
+    text-align: center;
+}
+
+/* ラジオボタンは非表示 */
+input[type="radio"] {
+    display: none;
+}
+
+/* チェックされたラジオボタンに対応するラベル */
+input[type="radio"]:checked + label {
+    background: #31A9EE;
+    color: #ffffff;
+}
+
+/* ラベルのテキスト部分 */
+.options span {
+    display: inline-block;
+    min-width: 150px;
+    text-align: center;
+}
+
+/* 確認ボタンのスタイル */
+#button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #006DD9;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#button:hover {
+    background-color: #004C99;
+}
+
+
+
+/* メニューバー */
+html {
+    box-sizing: border-box;
+}
+
+*, 
+*:before, 
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    background-color: #a9a9a9; 
+}
+.nav {
+    width: 550px;
+    margin: 100px auto 0 auto;
+    text-align: center;
+}
+
+/* Navigation */
+
+.nav {
+    font-family: Georgia, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.nav-items {
+    padding: 0;
+    list-style: none;
+}
+
+.nav-item {
+    display: inline-block;
+    margin-right: 25px;
+}
+
+.nav-item:last-child {
+    margin-right: 0;
+}
+
+.nav-link,
+.nav-link:link, 
+.nav-link:visited, 
+.nav-link:active,
+.submenu-link,
+.submenu-link:link, 
+.submenu-link:visited, 
+.submenu-link:active {
+    display: block;
+    position: relative;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+}
+
+.nav-link,
+.nav-link:link, 
+.nav-link:visited, 
+.nav-link:active {
+    color: #fff;
+    font-weight: bold;
+}
+
+.nav-link::before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    -webkit-transform: translate(0, 10px);
+    transform: translate(0, 10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover::before,
+.nav-link:hover::before {
+    opacity: 1;
+    -webkit-transform: translate(0, 5px);
+    transform: translate(0, 5px);
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown .nav-link {
+    padding-right: 15px;
+    height: 17px;
+    line-height: 17px;
+}
+
+.dropdown .nav-link::after {
+    content: "";
+    position:absolute;
+    top: 6px;
+    right: 0;
+    border: 5px solid transparent;
+    border-top-color: #fff;
+}
+
+.submenu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    z-index: 100;
+    width: 200px;
+    margin-left: -100px;
+    background: #fff;
+    border-radius: 3px;
+    line-height: 1.46667;
+    margin-top: -5px;
+    box-shadow: 0 0 8px rgba(0,0,0,.3);
+    opacity:0;
+    -webkit-transform: translate(0, 0) scale(.85);
+    transform: translate(0, 0)scale(.85);
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+    pointer-events: none;
+}
+
+.submenu::after, 
+.submenu::before {
+    content: ""; 
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -10px;
+    border: 10px solid transparent;
+    height: 0;
+}
+
+.submenu::after {
+    border-bottom-color: #fff;
+}
+
+.submenu::before {
+    margin-left: -13px;
+    border: 13px solid transparent;
+    border-bottom-color: rgba(0,0,0,.1);
+    -webkit-filter:blur(1px);
+    filter:blur(1px);
+}
+
+.submenu-items {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.submenu-item {
+    display: block;
+    text-align: left;
+}
+
+.submenu-link,
+.submenu-link:link, 
+.submenu-link:visited, 
+.submenu-link:active {
+    color: #3498db;
+    padding: 10px 20px;
+}
+
+.submenu-link:hover {
+    text-decoration: underline;
+}
+
+.submenu-seperator {
+    height: 0;
+    margin: 12px 10px;
+    border-top: 1px solid #eee;
+}
+
+.show-submenu .submenu {
+    opacity: 1;
+    -webkit-transform: translate(0, 25px) scale(1);
+    transform: translate(0, 25px) scale(1);
+    pointer-events: auto;
+}
+
+/* 単語list */
+#wordListContainer {
+    display: none; /* 最初は非表示 */
+    position: absolute; /* 他の要素に影響を与えないようにする */
+    top: 50%; /* 画面中央に表示 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* 他のコンテンツより前面に表示 */
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+#wordListContainer ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#wordListContainer li {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+
+@media only screen and (max-width: 767px) {
+    /* 全体コンテナ */
+    .container {
+        width: 100vw;
+        height: auto; /* 高さはコンテンツに応じて自動調整 */
+        padding: 20px;
+        perspective: 800px; /* 視点を少し調整 */
+    }
+
+    /* 単語表示ボックス */
+    .wordbox {
+        width: 90%;
+        height: auto;
+        padding: 20px;
+        font-size: 18px; /* フォントサイズを大きく */
+    }
+
+    /* 次のページ側のスタイル（新しい単語のカード） */
+    .wordbox-back {
+        width: 100%;
+        height: 100%;
+        font-size: 18px; /* フォントサイズを大きく */
+    }
+
+    /* 選択肢ボックス */
+    .control {
+        width: 90%;
+        margin: 20px 0;
+    }
+
+    /* 選択肢ラベル */
+    .options label {
+        padding: 15px;
+        font-size: 16px; /* 選択肢のテキストを大きく */
+    }
+
+    /* 確認ボタンのスタイル */
+    #button {
+        padding: 15px;
+        font-size: 18px; /* ボタンのテキストを大きく */
+    }
+
+    /* メニューバーの調整 */
+    .nav {
+        width: 100%;
+        padding: 10px;
+        margin: 0;
+    }
+
+    .nav-item {
+        margin-right: 15px;
+    }
+
+    .nav-link {
+        font-size: 16px;
+    }
+
+    .dropdown .nav-link {
+        padding-right: 10px;
+    }
+
+    /* 単語リスト */
+    #wordListContainer {
+        display: block; /* リストを表示する */
+        width: 90%; /* リストの幅を画面幅の90%に設定 */
+        left: 5%; /* 画面の中央に配置 */
+        padding: 15px;
+        font-size: 16px;
+        max-width: 400px; /* 最大幅を400pxに制限 */
+        max-height: 80vh; /* 高さが画面の80%を超えないように設定 */
+        overflow-y: auto; /* 高さを超えた場合はスクロール可能にする */
+        word-wrap: break-word; /* 長い単語を折り返す */
+        box-sizing: border-box; /* パディングを含めた幅の計算 */
+        background-color: #f9f9f9; /* 背景色 */
+        border: 1px solid #ccc; /* ボーダーの追加 */
+        z-index: 10; /* 他の要素より前面に表示 */
+    }
+
+    /* リスト項目のスタイル */
+    #wordListContainer ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #wordListContainer li {
+        margin-bottom: 10px;
+        font-size: 16px;
+        word-wrap: break-word; /* 長いテキストを折り返し */
+    }
+
+    /* 単語追加フォーム */
+    #inputform {
+        width: 90%;  /* 画面幅の90%を使用 */
+        padding: 20px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        box-sizing: border-box;  /* パディングを含めた全体幅を調整 */
+        max-width: 400px;  /* フォームが大きすぎないように最大幅を設定 */
+        max-height: 80vh;  /* 高さが画面の80%を超えないように制限 */
+        overflow-y: auto;  /* 内容が多い場合にスクロールできるようにする */
+    }
+    
+    /* スマホ用のフォーム入力フィールド */
+    #inputword, #inputmeaning {
+        width: 100%;  /* 幅を100%にして画面幅に収める */
+        font-size: 16px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;  /* パディングを含めた全体幅を調整 */
+    }
+    
+    /* スマホ用の確定ボタン */
+    #confirmButton {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;  /* ボタンのテキストを大きく */
+    }
+}
